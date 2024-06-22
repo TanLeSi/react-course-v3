@@ -9,7 +9,6 @@ const App = () => {
   const [jobs, setJobs] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedCompany, setSelectedCompany] = useState("");
-  const [selectedJobs, setSelectedJobs] = useState([]);
   const fetchJobs = async () => {
     try {
       const data = await fetch(url);
@@ -17,7 +16,6 @@ const App = () => {
       const firstCompany = fetchedJobs[0].company;
       setJobs(fetchedJobs);
       setSelectedCompany(firstCompany);
-      setSelectedJobs(fetchedJobs.filter((job) => job.company === firstCompany));
       setIsLoading(false);
     } catch (err) {
       alert(err);
@@ -26,11 +24,7 @@ const App = () => {
   useEffect(() => {
     fetchJobs()
   }, []);
-
-  const filterJob = (company) => {
-    setSelectedCompany(company)
-    setSelectedJobs(jobs.filter((job) => job.company === company));
-  }
+  const filteredJobs = jobs.filter((job) => job.company === selectedCompany);
   const allCompanies = [... new Set(jobs.map((job) => job.company))]
   if (isLoading) {
     return (
@@ -41,8 +35,8 @@ const App = () => {
   };
   return (
     <section className="jobs-center">
-      <Tabs companies={allCompanies} selectedCompany={selectedCompany} filterJob={filterJob} />
-      <JobPanel jobs={selectedJobs} />
+      <Tabs companies={allCompanies} selectedCompany={selectedCompany} filterJob={setSelectedCompany} />
+      {filteredJobs && <JobPanel jobs={filteredJobs} />}
     </section>
   )
 }
